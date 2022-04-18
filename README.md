@@ -4,8 +4,8 @@
 do not have direct user interaction,**jobs that can run in the **background).
 
 
-**To Compile: gcc -O test -Wall HW4.c queue.c -lpthread**
+**To Compile: gcc -o hw4 HW4.c queue.c -lpthread**
 
- **To Run: ./test `<no of threads>`**
+ **To Run: ./hw4 `<no of threads>`**
 
 Authors: **Santosh Pasnoor** & **Piyush Soni**
