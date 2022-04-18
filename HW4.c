@@ -94,6 +94,7 @@ void queue_handler()
     kill(0, SIGINT);
 }
 
+
 void *all_jobs_complete(void *arg)
 {
     job *current_jobs;

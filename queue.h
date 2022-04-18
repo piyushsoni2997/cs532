@@ -30,6 +30,7 @@ typedef struct queue
     int count;
 } queue;
 
+
 job create_job(char *command, int job_id);
 void show_jobs(job *jobs, int n);
 void submit_history(job *jobs, int n);
@@ -44,4 +45,3 @@ char *remove_null(char *s);
 char *get_command(char *line);
 
 #endif
-

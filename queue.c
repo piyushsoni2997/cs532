@@ -90,3 +90,76 @@ int queue_insert(queue *job_queue, job *current_jobs)
 
     return job_queue->count;
 }
+
+job *queue_delete(queue *job_queue)
+{
+    if ((job_queue == NULL) || (job_queue->count == 0))
+        return (job *)-1;
+
+    job *job_details = job_queue->buffer[job_queue->start];
+    job_queue->start = (job_queue->start + 1) % job_queue->size;
+    job_queue->count = job_queue->count -1;
+
+    return job_details;
+}
+
+void queue_destroy(queue *job_queue)
+{
+    free(job_queue->buffer);
+    free(job_queue);
+}
+
+char *current_time()
+{
+    int i, j;
+    time_t curr_time = time(NULL);
+    char *time_str;
+    time_str = malloc(sizeof(char) * strlen(ctime(&curr_time)));
+    strcpy(time_str, ctime(&curr_time));
+    i = -1;
+    
+    while ((j = time_str[++i]) != '\0' && j != '\n')
+        time_str[i] = j;
+    time_str[i] = '\0';
+
+    return time_str;
+}
+
+
+char **get_args(char *line)
+{
+    char *copy = malloc(sizeof(char) * (strlen(line) + 1));
+    strcpy(copy, line);
+
+    char *arg;
+    char **args = malloc(sizeof(char *));
+    int i = 0;
+    while ((arg = strtok(copy, " \t")) != NULL)
+    {
+        args[i] = malloc(sizeof(char) * (strlen(arg) + 1));
+        strcpy(args[i], arg);
+        args = realloc(args, sizeof(char *) * (++i + 1));
+        copy = NULL;
+    }
+    args[i] = NULL;
+    return args;
+}
+
+
+int file_open(char *fn)
+{
+    int fd;
+    if ((fd = open(fn, O_CREAT | O_APPEND | O_WRONLY, 0755)) == -1)
+    {
+        fprintf(stderr, "Error: failed to open \"%s\"\n", fn);
+        perror("open");
+        exit(-1);
+    }
+    return fd;
+}
+
+char *remove_null( char *s )
+{
+    s[strcspn ( s, "\n" )] = '\0';
+    return s;
+}
