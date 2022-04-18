@@ -93,3 +93,63 @@ void queue_handler()
     }
     kill(0, SIGINT);
 }
+
+
+void *all_jobs_complete(void *arg)
+{
+    job *current_jobs;
+    curr_work_num_jobs = 0;
+    for (;;)
+    {
+        if (waiting_jobs->count > 0 && curr_work_num_jobs < max_job)
+        {
+            current_jobs = queue_delete(waiting_jobs);
+            pthread_create(&current_jobs->tid, NULL, curr_job_complete, current_jobs);
+            pthread_detach(current_jobs->tid);
+        }
+        sleep(2);
+    }
+    return NULL;
+}
+
+void *curr_job_complete(void *arg)
+{
+    job *current_jobs;
+    char **args;
+    pid_t pid;
+    
+    current_jobs = (job *)arg;
+    ++curr_work_num_jobs;
+    current_jobs->stat = "working";
+    current_jobs->start = current_time();
+
+    pid = fork();
+    if (pid == 0) /* child process */
+    {
+        dup2(file_open(current_jobs->output_file), STDOUT_FILENO);
+        dup2(file_open(current_jobs->err_file), STDERR_FILENO);
+        args = get_args(current_jobs->command);
+        execvp(args[0], args);
+        fprintf(stderr, "Error: for Argument %s \n", args[0]);
+        perror("execvp");
+        exit(-1);
+    }
+    else if (pid > 0) /* parent process */
+    {
+        waitpid(pid, &current_jobs->exit_stat, WUNTRACED);
+        current_jobs->stat = "complete";
+        current_jobs->stop = current_time();
+
+        if (!WIFEXITED(current_jobs->exit_stat))
+            fprintf(stderr, "Child process %d did not terminate normally!\n", pid);
+    }
+    else
+    {
+        fprintf(stderr, "Error: process fork failed\n");
+        perror("fork");
+        exit(-1);
+    }
+
+    --curr_work_num_jobs;
+    return NULL;
+}
