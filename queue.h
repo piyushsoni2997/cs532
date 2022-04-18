@@ -30,4 +30,18 @@ typedef struct queue
     int count;
 } queue;
 
+job create_job(char *command, int job_id);
+void show_jobs(job *jobs, int n);
+void submit_history(job *jobs, int n);
+queue *queue_init(int n);
+int queue_insert(queue *job_queue, job *jp);
+job *queue_delete(queue *job_queue);
+void queue_destroy(queue *job_queue);
+char *current_time();
+char **get_args(char *line);
+int file_open(char *fn);
+char *remove_null(char *s);
+char *get_command(char *line);
+
+#endif
 
