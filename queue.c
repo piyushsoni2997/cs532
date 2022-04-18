@@ -128,18 +128,18 @@ char *current_time()
 
 char **get_args(char *line)
 {
-    char *temp = malloc(sizeof(char) * (strlen(line) + 1));
-    strcpy(temp, line);
+    char *copy = malloc(sizeof(char) * (strlen(line) + 1));
+    strcpy(copy, line);
 
     char *arg;
     char **args = malloc(sizeof(char *));
     int i = 0;
-    while ((arg = strtok(temp, " \t")) != NULL)
+    while ((arg = strtok(copy, " \t")) != NULL)
     {
         args[i] = malloc(sizeof(char) * (strlen(arg) + 1));
         strcpy(args[i], arg);
         args = realloc(args, sizeof(char *) * (++i + 1));
-        temp = NULL;
+        copy = NULL;
     }
     args[i] = NULL;
     return args;
